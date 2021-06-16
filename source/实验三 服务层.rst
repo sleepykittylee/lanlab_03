@@ -126,36 +126,43 @@ EnglishPal
 .. code:: python
 
    def read(user, user_repo, article_repo, session):
-      admit_user = user_repo.get(user.username)
-      if admit_user is None or admit_user.password != user.password or admit_user.username != user.username:
+    admit_user = user_repo.get(user.username) # 获取用户登录名
+    # 如果用户名为空或密码错误或用户名不存在，则抛出用户异常
+    if admit_user is None or admit_user.password != user.password or admit_user.username != user.username:
         raise UnknownUser
-      difficult = 0
-      number = 0
-      word = session.query(model.NewWord).filter_by(username=user.username).all()
-      num = []
-      for i in word:
+    difficult = 0
+    number = 0
+    # 查询当前用户的所有生词
+    word = session.query(model.NewWord).filter_by(username=user.username).all()
+    num = []
+    # 对当前用户的生词建立难度表并排序
+    for i in word:
         num.append(WORD_DIFFICULTY_LEVEL[i.word])
-      num.sort(reverse=True)
-      for i in num:
+    num.sort(reverse=True)
+    # 取前n个（此处n取3，当单词数小于3，则全部相加）难度值较高的生词进行相加
+    for i in num:
         difficult += i
         number += 1
         if number >= 3:
             break
 
-      difficult /= number
-      articles = session.query(model.Article).all()
-
-      best = articles[0]
-      for i in articles:
+    difficult /= number # 获取用户的词汇级别Lu的值
+    articles = session.query(model.Article).all()
+		# 选择合适的文章
+    best = articles[0]
+    for i in articles:
         if (i.level > difficult) and (best.level > i.level):
-          best = i
-      if (best.level > difficult):
+            best = i
+    if (best.level > difficult):
         article = best
-      else:
+    else:
+        # 如果文章存储库中没有文章，或者找不到与用户的词汇水平匹配的文章
+        # 则抛出NoArticleMatched异常
         raise NoArticleMatched
-      session.query(model.User).filter_by(username=user.username).one().read_article(article)
-      session.commit()
-      return article.article_id
+    session.query(model.User).filter_by(username=user.username).one().read_article(article)
+    session.commit()
+    return article.article_id
+    
 
 结果
 ------
