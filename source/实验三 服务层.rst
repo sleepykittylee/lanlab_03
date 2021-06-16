@@ -169,6 +169,36 @@ EnglishPal
 讨论
 ------
 
+read功能如何成功运行？
+~~~~~~~~~~~~~~~~~~~~~~
+
+1. 我们首先获取用户登录名，如果密码错误或者用户名错误，则抛出用户异常；
+2. 随后，我们获取用户的词汇列表，根据每个词的难度，计算出该用户的词汇级别Lu的值；
+3. 紧接着获取文章列表，将文章的难度和Lu进行匹配，选择难度最适合的文章；
+4. 如果文章存储库中没有文章，或者找不到与用户的词汇水平匹配的文章，则抛出NoArticleMatched异常；
+5. 最后将合适的文章添加到用户对应的阅读记录里。
+
+在 services.py 中的read函数是否遵循单一职责原则 (SRP) ？
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+不是。
+
+因为Single responsibility
+principle（SRP）单一责任原则是一种计算机编程原则，它规定每个模块、类或函数都应该对软件的单一责任提供功能，并且该责任应该完全由类封装。它的所有服务都应严格配合这一责任。即，将不同的职责分离到单独的类中。SRP将职责（Responsibility）定义为
+“一个变化的原因（a reason for
+change）”。如果你能想出多于一种动机来更改一个类，则这个类就包含多于一个职责。
+
+在read函数中，我们耦合了三个职责：
+
+1. 用户登录判断；
+2. 实现匹配用户词汇级别Lu和文章难度La，选择最合适的文章供用户阅读；
+3. 数据传输。
+
+因此在 services.py 中的read函数不遵循单一职责原则 (SRP) 。
+
+TDD的优缺点
+~~~~~~~~~~~~~~~~~~~~~~
+
 通过实验我们发现TDD在此次开发时是很有帮助的，它具有以下几个优点：
 
 1. 编出来的程序是自带测试的，可靠性好，缺陷少；
@@ -183,5 +213,7 @@ EnglishPal
 ----------
 
 -  百度百科：\ `TDD（测试驱动开发(Test-Driven Development)）`_
+-  博客园：\ `单一职责原则（Single Responsibility Principle）`_
 
 .. _TDD（测试驱动开发(Test-Driven Development)）: https://baike.baidu.com/item/TDD/9064369
+.. _单一职责原则（Single Responsibility Principle）: https://www.cnblogs.com/gaochundong/p/single_responsibility_principle.html

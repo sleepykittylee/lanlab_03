@@ -111,7 +111,12 @@
 <li class="toctree-l3"><a class="reference internal" href="#test-service-py">运行test_service.py</a></li>
 </ul>
 </li>
-<li class="toctree-l2"><a class="reference internal" href="#id14">讨论</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#id14">讨论</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#read">read功能如何成功运行？</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#services-py-read-srp">在 services.py 中的read函数是否遵循单一职责原则 (SRP) ？</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#tdd">TDD的优缺点</a></li>
+</ul>
+</li>
 <li class="toctree-l2"><a class="reference internal" href="#id15">参考资料</a></li>
 </ul>
 </li>
@@ -316,6 +321,33 @@ NoArticleMatched 异常。</p></li>
 </div>
 <div class="section" id="id14">
 <h2>讨论<a class="headerlink" href="#id14" title="永久链接至标题">¶</a></h2>
+<div class="section" id="read">
+<h3>read功能如何成功运行？<a class="headerlink" href="#read" title="永久链接至标题">¶</a></h3>
+<ol class="arabic simple">
+<li><p>我们首先获取用户登录名，如果密码错误或者用户名错误，则抛出用户异常；</p></li>
+<li><p>随后，我们获取用户的词汇列表，根据每个词的难度，计算出该用户的词汇级别Lu的值；</p></li>
+<li><p>紧接着获取文章列表，将文章的难度和Lu进行匹配，选择难度最适合的文章；</p></li>
+<li><p>如果文章存储库中没有文章，或者找不到与用户的词汇水平匹配的文章，则抛出NoArticleMatched异常；</p></li>
+<li><p>最后将合适的文章添加到用户对应的阅读记录里。</p></li>
+</ol>
+</div>
+<div class="section" id="services-py-read-srp">
+<h3>在 services.py 中的read函数是否遵循单一职责原则 (SRP) ？<a class="headerlink" href="#services-py-read-srp" title="永久链接至标题">¶</a></h3>
+<p>不是。</p>
+<p>因为Single responsibility
+principle（SRP）单一责任原则是一种计算机编程原则，它规定每个模块、类或函数都应该对软件的单一责任提供功能，并且该责任应该完全由类封装。它的所有服务都应严格配合这一责任。即，将不同的职责分离到单独的类中。SRP将职责（Responsibility）定义为
+“一个变化的原因（a reason for
+change）”。如果你能想出多于一种动机来更改一个类，则这个类就包含多于一个职责。</p>
+<p>在read函数中，我们耦合了三个职责：</p>
+<ol class="arabic simple">
+<li><p>用户登录判断；</p></li>
+<li><p>实现匹配用户词汇级别Lu和文章难度La，选择最合适的文章供用户阅读；</p></li>
+<li><p>数据传输。</p></li>
+</ol>
+<p>因此在 services.py 中的read函数不遵循单一职责原则 (SRP) 。</p>
+</div>
+<div class="section" id="tdd">
+<h3>TDD的优缺点<a class="headerlink" href="#tdd" title="永久链接至标题">¶</a></h3>
 <p>通过实验我们发现TDD在此次开发时是很有帮助的，它具有以下几个优点：</p>
 <ol class="arabic simple">
 <li><p>编出来的程序是自带测试的，可靠性好，缺陷少；</p></li>
@@ -327,10 +359,12 @@ NoArticleMatched 异常。</p></li>
 <li><p>干扰编程思维：TDD过程中，编写测试代码大概占用一半时间，而且与编写产品代码交替进行，难免影响编程思维的连贯性。当遇到难题，测试工作卡住时，对开发思维的干扰就更大了。</p></li>
 </ol>
 </div>
+</div>
 <div class="section" id="id15">
 <h2>参考资料<a class="headerlink" href="#id15" title="永久链接至标题">¶</a></h2>
 <ul class="simple">
 <li><p>百度百科：<a class="reference external" href="https://baike.baidu.com/item/TDD/9064369">TDD（测试驱动开发(Test-Driven Development)）</a></p></li>
+<li><p>博客园：<a class="reference external" href="https://www.cnblogs.com/gaochundong/p/single_responsibility_principle.html">单一职责原则（Single Responsibility Principle）</a></p></li>
 </ul>
 </div>
 </div>
