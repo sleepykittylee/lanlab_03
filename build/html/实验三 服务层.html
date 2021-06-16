@@ -280,31 +280,36 @@ NoArticleMatched 异常。</p></li>
 <div class="section" id="service-py">
 <h4>修改service.py以完成测试<a class="headerlink" href="#service-py" title="永久链接至标题">¶</a></h4>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">read</span><span class="p">(</span><span class="n">user</span><span class="p">,</span> <span class="n">user_repo</span><span class="p">,</span> <span class="n">article_repo</span><span class="p">,</span> <span class="n">session</span><span class="p">):</span>
-    <span class="n">admit_user</span><span class="o">=</span><span class="n">user_repo</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">user</span><span class="o">.</span><span class="n">username</span><span class="p">)</span>     <span class="c1"># 获取用户登录名</span>
-    <span class="c1"># 如果用户名为空或密码错误或用户名不存在，则抛出用户异常</span>
-    <span class="k">if</span> <span class="n">admit_user</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">or</span> <span class="n">admit_user</span><span class="o">.</span><span class="n">password</span><span class="o">!=</span><span class="n">user</span><span class="o">.</span><span class="n">password</span> <span class="ow">or</span> <span class="n">admit_user</span><span class="o">.</span><span class="n">username</span><span class="o">!=</span><span class="n">user</span><span class="o">.</span><span class="n">username</span><span class="p">:</span>
-        <span class="k">raise</span> <span class="n">UnknownUser</span>
-    <span class="n">difficult</span><span class="o">=</span><span class="mi">0</span>
-    <span class="n">number</span><span class="o">=</span><span class="mi">0</span>
-    <span class="k">for</span> <span class="n">word</span> <span class="ow">in</span> <span class="n">session</span><span class="o">.</span><span class="n">query</span><span class="p">(</span><span class="n">model</span><span class="o">.</span><span class="n">NewWord</span><span class="p">)</span><span class="o">.</span><span class="n">filter_by</span><span class="p">(</span><span class="n">username</span><span class="o">=</span><span class="n">user</span><span class="o">.</span><span class="n">username</span><span class="p">)</span><span class="o">.</span><span class="n">all</span><span class="p">():</span>
-        <span class="n">difficult</span><span class="o">+=</span><span class="n">WORD_DIFFICULTY_LEVEL</span><span class="p">[</span><span class="n">word</span><span class="o">.</span><span class="n">word</span><span class="p">]</span>
-        <span class="n">number</span><span class="o">+=</span><span class="mi">1</span>
-    <span class="n">difficult</span><span class="o">/=</span><span class="n">number</span>                           <span class="c1"># 获取用户的词汇级别Lu的值</span>
-    <span class="n">articles</span><span class="o">=</span><span class="n">session</span><span class="o">.</span><span class="n">query</span><span class="p">(</span><span class="n">model</span><span class="o">.</span><span class="n">Article</span><span class="p">)</span><span class="o">.</span><span class="n">all</span><span class="p">()</span>
-    <span class="n">best</span><span class="o">=</span><span class="n">articles</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
-    <span class="c1"># 选择合适的文章</span>
-    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">articles</span><span class="p">:</span>
-        <span class="k">if</span> <span class="p">(</span><span class="n">i</span><span class="o">.</span><span class="n">level</span><span class="o">&gt;</span><span class="n">difficult</span><span class="p">)</span><span class="ow">and</span><span class="p">(</span><span class="n">best</span><span class="o">.</span><span class="n">level</span><span class="o">&gt;</span><span class="n">i</span><span class="o">.</span><span class="n">level</span><span class="p">):</span>
-            <span class="n">best</span><span class="o">=</span><span class="n">i</span>
-    <span class="k">if</span><span class="p">(</span><span class="n">best</span><span class="o">.</span><span class="n">level</span><span class="o">&gt;</span><span class="n">difficult</span><span class="p">):</span>
-        <span class="n">article</span><span class="o">=</span><span class="n">best</span>
-    <span class="k">else</span><span class="p">:</span>
-        <span class="c1"># 如果文章存储库中没有文章，或者找不到与用户的词汇水平匹配的文章</span>
-        <span class="c1"># 则抛出NoArticleMatched异常</span>
-        <span class="k">raise</span> <span class="n">NoArticleMatched</span>
-        <span class="n">session</span><span class="o">.</span><span class="n">query</span><span class="p">(</span><span class="n">model</span><span class="o">.</span><span class="n">User</span><span class="p">)</span><span class="o">.</span><span class="n">filter_by</span><span class="p">(</span><span class="n">username</span><span class="o">=</span><span class="n">user</span><span class="o">.</span><span class="n">username</span><span class="p">)</span><span class="o">.</span><span class="n">one</span><span class="p">()</span><span class="o">.</span><span class="n">read_article</span><span class="p">(</span><span class="n">article</span><span class="p">)</span>
-    <span class="n">session</span><span class="o">.</span><span class="n">commit</span><span class="p">()</span>
-    <span class="k">return</span> <span class="n">article</span><span class="o">.</span><span class="n">article_id</span>
+   <span class="n">admit_user</span> <span class="o">=</span> <span class="n">user_repo</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">user</span><span class="o">.</span><span class="n">username</span><span class="p">)</span>
+   <span class="k">if</span> <span class="n">admit_user</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">or</span> <span class="n">admit_user</span><span class="o">.</span><span class="n">password</span> <span class="o">!=</span> <span class="n">user</span><span class="o">.</span><span class="n">password</span> <span class="ow">or</span> <span class="n">admit_user</span><span class="o">.</span><span class="n">username</span> <span class="o">!=</span> <span class="n">user</span><span class="o">.</span><span class="n">username</span><span class="p">:</span>
+     <span class="k">raise</span> <span class="n">UnknownUser</span>
+   <span class="n">difficult</span> <span class="o">=</span> <span class="mi">0</span>
+   <span class="n">number</span> <span class="o">=</span> <span class="mi">0</span>
+   <span class="n">word</span> <span class="o">=</span> <span class="n">session</span><span class="o">.</span><span class="n">query</span><span class="p">(</span><span class="n">model</span><span class="o">.</span><span class="n">NewWord</span><span class="p">)</span><span class="o">.</span><span class="n">filter_by</span><span class="p">(</span><span class="n">username</span><span class="o">=</span><span class="n">user</span><span class="o">.</span><span class="n">username</span><span class="p">)</span><span class="o">.</span><span class="n">all</span><span class="p">()</span>
+   <span class="n">num</span> <span class="o">=</span> <span class="p">[]</span>
+   <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">word</span><span class="p">:</span>
+     <span class="n">num</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">WORD_DIFFICULTY_LEVEL</span><span class="p">[</span><span class="n">i</span><span class="o">.</span><span class="n">word</span><span class="p">])</span>
+   <span class="n">num</span><span class="o">.</span><span class="n">sort</span><span class="p">(</span><span class="n">reverse</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+   <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">num</span><span class="p">:</span>
+     <span class="n">difficult</span> <span class="o">+=</span> <span class="n">i</span>
+     <span class="n">number</span> <span class="o">+=</span> <span class="mi">1</span>
+     <span class="k">if</span> <span class="n">number</span> <span class="o">&gt;=</span> <span class="mi">3</span><span class="p">:</span>
+         <span class="k">break</span>
+
+   <span class="n">difficult</span> <span class="o">/=</span> <span class="n">number</span>
+   <span class="n">articles</span> <span class="o">=</span> <span class="n">session</span><span class="o">.</span><span class="n">query</span><span class="p">(</span><span class="n">model</span><span class="o">.</span><span class="n">Article</span><span class="p">)</span><span class="o">.</span><span class="n">all</span><span class="p">()</span>
+
+   <span class="n">best</span> <span class="o">=</span> <span class="n">articles</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+   <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">articles</span><span class="p">:</span>
+     <span class="k">if</span> <span class="p">(</span><span class="n">i</span><span class="o">.</span><span class="n">level</span> <span class="o">&gt;</span> <span class="n">difficult</span><span class="p">)</span> <span class="ow">and</span> <span class="p">(</span><span class="n">best</span><span class="o">.</span><span class="n">level</span> <span class="o">&gt;</span> <span class="n">i</span><span class="o">.</span><span class="n">level</span><span class="p">):</span>
+       <span class="n">best</span> <span class="o">=</span> <span class="n">i</span>
+   <span class="k">if</span> <span class="p">(</span><span class="n">best</span><span class="o">.</span><span class="n">level</span> <span class="o">&gt;</span> <span class="n">difficult</span><span class="p">):</span>
+     <span class="n">article</span> <span class="o">=</span> <span class="n">best</span>
+   <span class="k">else</span><span class="p">:</span>
+     <span class="k">raise</span> <span class="n">NoArticleMatched</span>
+   <span class="n">session</span><span class="o">.</span><span class="n">query</span><span class="p">(</span><span class="n">model</span><span class="o">.</span><span class="n">User</span><span class="p">)</span><span class="o">.</span><span class="n">filter_by</span><span class="p">(</span><span class="n">username</span><span class="o">=</span><span class="n">user</span><span class="o">.</span><span class="n">username</span><span class="p">)</span><span class="o">.</span><span class="n">one</span><span class="p">()</span><span class="o">.</span><span class="n">read_article</span><span class="p">(</span><span class="n">article</span><span class="p">)</span>
+   <span class="n">session</span><span class="o">.</span><span class="n">commit</span><span class="p">()</span>
+   <span class="k">return</span> <span class="n">article</span><span class="o">.</span><span class="n">article_id</span>
 </pre></div>
 </div>
 </div>
